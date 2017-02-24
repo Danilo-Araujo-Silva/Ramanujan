@@ -1,0 +1,28 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Segmentações</h1>
+
+<table class="responsive-table highlight striped">
+  <thead>
+    <tr>
+      <th>Título</th>
+      <th>Descrição</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @segmentations.each do |segmentation| %>
+      <tr>
+        <td><%= segmentation.title %></td>
+        <td><%= segmentation.description %></td>
+        <td><%= link_to 'Mostrar', segmentation, :class => "waves-effect waves-light btn" %></td>
+        <td><%= link_to 'Alterar', edit_segmentation_path(segmentation), :class => "waves-effect waves-light btn" %></td>
+        <td><%= link_to 'Remover', segmentation, method: :delete, data: { confirm: 'Você tem certeza que deseja remover esta segmentação?' }, :class => "waves-effect waves-light btn" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'Nova segmentação', new_segmentation_path, :class => "waves-effect waves-light btn" %>

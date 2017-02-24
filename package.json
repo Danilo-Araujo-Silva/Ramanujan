@@ -1,0 +1,37 @@
+{
+  "name": "ramanujan",
+  "version": "0.0.1",
+  "description": "A wep application to create segmentations.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Danilo-Araujo-Silva/Ramanujan.git"
+  },
+  "keywords": [
+    "ruby",
+    "rails",
+    "ruby on rails",
+    "rubyonrails",
+    "html5 boilerplate"
+    "materialize-css"
+    "npm",
+    "typescript",
+    "typescript-rails"
+  ],
+  "author": "Danilo Araújo Silva",
+  "license": " LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Danilo-Araujo-Silva/Ramanujan/issues"
+  },
+  "homepage": "https://github.com/Danilo-Araujo-Silva/Ramanujan#readme",
+  "dependencies": {
+    "@types/node": "^7.0.5",
+    "typescript": "^2.1.6"
+  }
+}

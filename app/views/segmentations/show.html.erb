@@ -1,0 +1,57 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Título:</strong>
+  <%= @segmentation.title %>
+</p>
+
+<p>
+  <strong>Descrição:</strong>
+  <%= @segmentation.description %>
+</p>
+
+<%= link_to 'Alterar', edit_segmentation_path(@segmentation), :class => "waves-effect waves-light btn" %> |
+<%= link_to 'Voltar', segmentations_path, :class => "waves-effect waves-light btn" %>
+
+<br/>
+<br/>
+
+<h5>Contatos Segmentados</h5>
+
+<% if !@contacts %>
+  <table class="responsive-table highlight striped">
+    <tbody>
+      <tr>
+        <td colspan="7">
+          Nenhum contato encontrado.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+<% else %>
+  <table class="responsive-table highlight striped">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>E-mail</th>
+        <th>Idade</th>
+        <th>Estado</th>
+        <th>Cargo</th>
+        <th colspan="2"></th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <% @contacts.each do |contact| %>
+        <tr>
+          <td><%= contact.name %></td>
+          <td><%= contact.email %></td>
+          <td><%= contact.age %></td>
+          <td><%= contact.state %></td>
+          <td><%= contact.role %></td>
+          <td><%= link_to 'Mostrar', contact, :class => "waves-effect waves-light btn" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

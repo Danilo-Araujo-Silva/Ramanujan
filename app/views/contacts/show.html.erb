@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Nome:</strong>
+  <%= @contact.name %>
+</p>
+
+<p>
+  <strong>E-mail:</strong>
+  <%= @contact.email %>
+</p>
+
+<p>
+  <strong>Idade:</strong>
+  <%= @contact.age %>
+</p>
+
+<p>
+  <strong>Estado:</strong>
+  <%= @contact.state %>
+</p>
+
+<p>
+  <strong>Cargo:</strong>
+  <%= @contact.role %>
+</p>
+
+<%= link_to 'Alterar', edit_contact_path(@contact), :class => "waves-effect waves-light btn" %> |
+<%= link_to 'Voltar', contacts_path, :class => "waves-effect waves-light btn" %>

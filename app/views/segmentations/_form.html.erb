@@ -1,0 +1,418 @@
+<%= content_for :head_css_after do %>
+<style>
+  .action {
+    margin: 1.5rem 0 0 0;
+  }
+
+  .field {
+    margin: 1.8rem 0 0 0;
+  }
+</style>
+<% end %>
+
+<%= form_for(segmentation) do |f| %>
+  <% if segmentation.errors.any? %>
+    <div id="error_explanation">
+      <h6>
+        <% if segmentation.errors.count == 1 %>
+          1 erro impossibilitou a segmentação de ser salva:
+        <% else %>
+          <%= segmentation.errors.count %> erros impossibilitaram a segmentação de ser salva:
+        <% end %>
+      </h6>
+
+      <ul class="collection">
+      <% segmentation.errors.full_messages.each do |message| %>
+        <li class="collection-item"><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :title, "Título" %>
+    <%= f.text_field :title %>
+  </div>
+
+  <div class="field">
+    <%= f.label :description, "Descrição" %>
+    <%= f.text_field :description %>
+  </div>
+
+  <div class="field">
+    <%= f.label "Critérios" %>
+
+    <br/>
+    <br/>
+
+    <div class="row">
+      <div id="criteria_select" class="input-field col s10">
+        <select id="criterion" name="criterion" class="browser-default">
+          <option value="">Escolher um critério</option>
+          <% @dictionary[:tables][:contact][:fields].each do |k, v| %>
+            <option
+              value="<%= k %>"
+            >
+              <%= v[:name] %>
+            </option>
+          <% end %>
+        </select>
+      </div>
+      <div class="col s2">
+        <i
+          id="action_plus"
+          class="fa fa-plus fa-2x action"
+          onclick="segmentation.criteria.add_criterion();"
+        ></i>
+      </div>
+    </div>
+
+    <br/>
+    <p id="criterion_message"></p>
+    <br/>
+
+    <div id="criteria">
+      <% if @meta %>
+        <% @meta.each_with_index do |array, block| %>
+          <div id="criterion_<%= block %>" class="row">
+            <% array.each_with_index do |part, position| %>
+              <% if part["operator"] %>
+                <% if part["operator"]["aggregation"] %>
+                  <div class="input-field col s1">
+                    <select
+                     name="segmentation[meta][<%= block %>][<%= position %>][operator][aggregation]"
+                     class="browser-default"
+                    >
+                      <option value=""></option>
+                      <option
+                        value="<%= position == 0 ? "(" : ")" %>"
+                        <%= 'selected="selected"' if !part["operator"]["aggregation"].empty? %>
+                      >
+                        <%= position == 0 ? "(" : ")" %>
+                      </option>
+                    </select>
+                  </div>
+                <% elsif part["operator"]["logical"] %>
+                  <div class="input-field col s1">
+                    <select
+                     name="segmentation[meta][<%= block %>][<%= position %>][operator][logical]"
+                     class="browser-default"
+                    >
+                      <option></option>
+                      <% @dictionary[:operators][:logical].each do |k, v| %>
+                        <option
+                          value="<%= k %>"
+                          <%= raw 'selected="selected"' if part["operator"]["logical"] == k %>
+                        >
+                          <%= v[:name] %>
+                        </option>
+                      <% end %>
+                    </select>
+                  </div>
+                <% elsif part["operator"]["numeric"] %>
+                  <div class="input-field col s3">
+                    <select
+                     name="segmentation[meta][<%= block %>][<%= position %>][operator][numeric]"
+                     class="browser-default"
+                    >
+                      <option value="">Escolher</option>
+                      <% @dictionary[:operators][:numeric].each do |k, v| %>
+                        <option
+                          value="<%= k %>"
+                          <%= raw 'selected="selected"' if part["operator"]["numeric"] == k %>
+                        >
+                          <%= v[:name] %>
+                        </option>
+                      <% end %>
+                    </select>
+                  </div>
+                <% elsif part["operator"]["textual"] %>
+                  <div class="input-field col s3">
+                    <select
+                     name="segmentation[meta][<%= block %>][<%= position %>][operator][textual]"
+                     class="browser-default"
+                    >
+                      <option value="">Escolher</option>
+                      <% @dictionary[:operators][:textual].each do |k, v| %>
+                        <option
+                          value="<%= k %>"
+                          <%= raw 'selected="selected"' if part["operator"]["textual"] == k %>
+                        >
+                          <%= v[:name] %>
+                        </option>
+                      <% end %>
+                    </select>
+                  </div>
+                <% end %>
+              <% elsif part["field"] %>
+                <div class="col s1 field">
+                  <span>
+                    <%= @dictionary["tables"]["contact"]["fields"][part["field"][part["field"].keys[0]]][:name] %>
+                  </span>
+                  <input
+                    type="hidden"
+                    name="segmentation[meta][<%= block %>][<%= position %>][field][<%= part["field"].keys[0] %>]"
+                    value="<%= part["field"][part["field"].keys[0]] %>"
+                  />
+                </div>
+              <% elsif part["placeholder"] %>
+                <div class="input-field col s3">
+                  <input
+                    type="text"
+                    class="placeholder"
+                    name="segmentation[meta][<%= block %>][<%= position %>][placeholder][<%= part["placeholder"].keys[0] %>]"
+                    onkeyup="segmentation.criteria.on_key_up_placeholder(this);"
+                    value="<%= part["placeholder"][part["placeholder"].keys[0]] %>"
+                  />
+                </div>
+              <% end %>
+            <% end %>
+            <div class="input-field col s1">
+              <i
+                class="fa fa-minus action"
+                onclick="segmentation.criteria.remove_criterion('criterion_<%= block %>');"
+              ></i>
+            </div>
+            <br/>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+
+    <br/>
+    <br/>
+
+    <a
+      class="waves-effect waves-light btn"
+      onclick="segmentation.criteria.remove_all_criteria();"
+    >
+      Remover todos critérios
+    </a>
+
+    <br/>
+    <br/>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Salvar", :class => "waves-effect waves-light btn" %>
+  </div>
+<% end %>
+
+<%= content_for :body_js_after do %>
+<script>
+    segmentation = {};
+    segmentation.ids = {};
+    segmentation.selectors = {};
+    segmentation.criteria = {};
+    segmentation.templates = {};
+    segmentation.templates.select = {};
+    segmentation.templates.select.table = {};
+    segmentation.templates.select.table.contact = {};
+    segmentation.templates.block = {};
+
+    segmentation.dictionary = <%= raw @dictionary.to_json %>;
+    segmentation.criteria.counter = <%= @meta ? @meta.count : 0 %>;
+    segmentation.criteria.last = {};
+
+    segmentation.ids.criterion_id = "#criterion";
+    segmentation.ids.criteria_id = "#criteria";
+    segmentation.ids.criterion_message_id = "#criterion_message";
+    segmentation.selectors.criteria_select = "#criteria_select .select-dropdown";
+
+    segmentation.templates.select.logical = `
+      <% @dictionary[:operators][:logical].each do |k, v| %>
+        <option
+          value="<%= k %>"
+        >
+          <%= v[:name] %>
+        </option>
+      <% end %>
+    `;
+    segmentation.templates.select.aggregation = `
+      <% @dictionary[:operators][:aggregation].each do |k, v| %>
+        <option
+          value="<%= k %>"
+        >
+          <%= v[:name] %>
+        </option>
+      <% end %>
+    `;
+    segmentation.templates.select.numeric = `
+      <% @dictionary[:operators][:numeric].each do |k, v| %>
+        <option
+          value="<%= k %>"
+        >
+          <%= v[:name] %>
+        </option>
+      <% end %>
+    `;
+    segmentation.templates.select.textual = `
+      <% @dictionary[:operators][:textual].each do |k, v| %>
+        <option
+          value="<%= k %>"
+        >
+          <%= v[:name] %>
+        </option>
+      <% end %>
+    `;
+    segmentation.templates.select.table.contact.fields = `
+      <% @dictionary[:tables][:contact][:fields].each do |k, v| %>
+        <option
+          value="<%= k %>"
+        >
+          <%= v[:name] %>
+        </option>
+      <% end %>
+    `;
+
+    segmentation.criteria.add_criterion = function() {
+      var criterion = $(segmentation.ids.criterion_id).val();
+      if (!criterion) {
+        $(segmentation.ids.criterion_message_id).addClass("error");
+        $(segmentation.ids.criterion_message_id).text("Por favor selecione um critério primeiro.");
+
+        return false;
+      }
+
+      $(segmentation.ids.criterion_message_id).removeClass("error");
+      $(segmentation.ids.criterion_message_id).removeClass("sucess");
+      $(segmentation.ids.criterion_message_id).text("");
+
+      var is_contact_field = criterion in segmentation.dictionary.tables.contact.fields;
+
+      if (is_contact_field) {
+        var field = segmentation.dictionary.tables.contact.fields[criterion];
+
+        $(segmentation.ids.criteria_id).append(`
+          <div id="criterion_${segmentation.criteria.counter}" class="row">
+            <div class="input-field col s1">
+              <select
+               name="segmentation[meta][${segmentation.criteria.counter}][0][operator][aggregation]"
+               class="browser-default"
+              >
+                <option value=""></option>
+                <option value="(">(</option>
+              </select>
+            </div>
+            <div class="input-field col s1">
+              <select
+               name="segmentation[meta][${segmentation.criteria.counter}][1][operator][logical]"
+               class="browser-default"
+              >
+                <option></option>
+                ${segmentation.templates.select.logical}
+              </select>
+            </div>
+            <div class="col s1 field">
+              <span>
+                ${field.name}
+              </span>
+              <input
+                type="hidden"
+                name="segmentation[meta][${segmentation.criteria.counter}][2][field][${field.type}]"
+                value="${criterion}"
+              />
+            </div>
+            <div class="input-field col s3">
+              <select
+               name="segmentation[meta][${segmentation.criteria.counter}][3][operator][${field.type}]"
+               class="browser-default"
+              >
+                <option value="">Escolher</option>
+                ${field.type == 'numeric' ? segmentation.templates.select.numeric : ''}
+                ${field.type == 'textual' ? segmentation.templates.select.textual : ''}
+              </select>
+            </div>
+            <div class="input-field col s3">
+              <input
+                type="text"
+                class="placeholder"
+                name="segmentation[meta][${segmentation.criteria.counter}][4][placeholder][${field.type}]"
+                onkeyup="segmentation.criteria.on_key_up_placeholder(this);"
+                value=""
+              />
+            </div>
+            <div class="input-field col s1">
+              <select
+               name="segmentation[meta][${segmentation.criteria.counter}][5][operator][logical]"
+               class="browser-default"
+              >
+                <option value=""></option>
+                ${segmentation.templates.select.logical}
+              </select>
+            </div>
+            <div class="input-field col s1">
+              <select
+               name="segmentation[meta][${segmentation.criteria.counter}][6][operator][aggregation]"
+               class="browser-default"
+              >
+                <option value=""></option>
+                <option value=")">)</option>
+              </select>
+            </div>
+            <div class="input-field col s1">
+              <i
+                class="fa fa-minus action"
+                onclick="segmentation.criteria.remove_criterion('criterion_${segmentation.criteria.counter}');"
+              ></i>
+            </div>
+          </div>
+        `);
+
+        $('select').material_select();
+      } else {
+        throw `Tipo de critério desconhecido (${criterion}).`;
+      }
+
+      $(segmentation.selectors.criteria_select).val("Escolher um critério");
+      $(segmentation.ids.criterion_id).val("Escolher um critério");
+      segmentation.criteria.counter++;
+    }
+
+    segmentation.criteria.remove_criterion = function(criterion_id) {
+      $("#"+criterion_id).remove();
+    }
+
+    segmentation.criteria.remove_all_criteria = function() {
+      if (confirm("Tem certeza que deseja remover todos os critérios?")) {
+        $(segmentation.ids.criteria_id).html("");
+        segmentation.criteria.counter = 0;
+      }
+    }
+
+    segmentation.criteria.on_key_up_placeholder = function(self) {
+      if ($(self).hasClass("numeric")) {
+        self.value = self.value.replace(/[^0-9\.]/g,'');
+      }
+    }
+    
+    <%#
+    $(segmentation.ids.criterion_id).val("name");
+    segmentation.criteria.add_criterion();
+
+    $(segmentation.ids.criterion_id).val("age");
+    segmentation.criteria.add_criterion();
+
+    $(segmentation.ids.criterion_id).val("state");
+    segmentation.criteria.add_criterion();
+
+    $("[name='segmentation[meta][0][0][operator][aggregation]'").val("(");
+    $("[name='segmentation[meta][0][2][field][textual]'").val("name");
+    $("[name='segmentation[meta][0][3][operator][textual]'").val("^.*%$");
+    $("[name='segmentation[meta][0][4][placeholder][textual]'").val("Danilo");
+    $("[name='segmentation[meta][0][5][operator][logical]'").val("and");
+
+    $("[name='segmentation[meta][1][2][field][textual]'").val("age");
+    $("[name='segmentation[meta][1][3][operator][numeric]'").val("<=");
+    $("[name='segmentation[meta][1][4][placeholder][numeric]'").val("30");
+    $("[name='segmentation[meta][1][5][operator][logical]'").val("or");
+
+    $("[name='segmentation[meta][2][2][field][textual]'").val("state");
+    $("[name='segmentation[meta][2][3][operator][textual]'").val("^.*$");
+    $("[name='segmentation[meta][2][4][placeholder][textual]'").val("SP");
+    $("[name='segmentation[meta][2][6][operator][aggregation]'").val(")");
+
+    //$("[name='commit").click();
+    %>
+  </script>
+  <% end %>

@@ -1,0 +1,20 @@
+en:
+  activerecord:
+    attributes:
+      contact:
+        id: "Identificador"
+        name: "Nome"
+        email: "E-mail"
+        age: "Idade"
+        state: "Estado"
+        role: "Cargo"
+        created_at: "Data de Criação"
+        updated_at: "Data da Última Atualização"
+      segmentation:
+        id: "Identificador"
+        title: "Título"
+        description: "Descrição"
+        query: "Sentença"
+        parameters: "Parâmetros"
+        created_at: "Data de Criação"
+        updated_at: "Data da Última Atualização"

@@ -1,0 +1,16 @@
+/* humanstxt.org */
+/* TEAM */
+	Full-Stack Developer: Danilo Araújo Silva
+	Contact: silva.danilo.araujo [at] gmail.com
+	LinkedIn: https://www.linkedin.com/in/daniloaraujosilva
+	From: Montes Claros, Minas Gerais, Brazil
+
+/* THANKS */
+
+/* SITE */
+	Language: English, Portuguese
+	Doctype: HTML5
+
+/* TECHNOLOGY COLOPHON */
+  Ruby, Ruby on Rails, HTML5, CSS3, JavaScript (ES7),
+  TypeScript, Sass
